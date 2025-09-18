@@ -10,6 +10,18 @@ module DeviseCodeAuthenticatable
   end
 end
 
+# Rails 8 compatibility fix - must be applied before requiring devise
+# ActionMailer::Base.preview_path= was removed in Rails 8, replaced with preview_paths=
+unless ActionMailer::Base.respond_to?(:preview_path=)
+  ActionMailer::Base.define_singleton_method(:preview_path=) do |path|
+    if path
+      self.preview_paths = [path]
+    else
+      self.preview_paths = []
+    end
+  end
+end
+
 
 require 'devise'
 require 'devise_code_authenticatable/routes'
